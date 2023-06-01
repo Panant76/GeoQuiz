@@ -2,7 +2,6 @@ package com.panant76.geoquiz
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -30,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private var currentIndex = 0
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity() {
         revButton.setOnClickListener {
             val diff = currentIndex - 1
             currentIndex = if (diff == -1) questionBank.size - 1 else diff % questionBank.size
-
             updateQuestion()
         }
 
@@ -59,7 +58,9 @@ class MainActivity : AppCompatActivity() {
         nextButton.setOnClickListener {
             currentIndex = (currentIndex + 1) % questionBank.size
             updateQuestion()
+
         }
+
         questionTextView = findViewById(R.id.question_text_view)
         updateQuestion()
 
@@ -102,16 +103,23 @@ class MainActivity : AppCompatActivity() {
             falseButton.isEnabled = true
         }
     }
-
+private var counterTrue = 0
     private fun checkAnswer(userAnswer: Boolean) {
+
         val correctAnswer = questionBank[currentIndex].answer
 
         val messageResId = if (userAnswer == correctAnswer) {
+            counterTrue++
             R.string.correct_toast
+
         } else {
             R.string.incorrect_toast
         }
         questionBank[currentIndex].usrAnswer = userAnswer
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, counterTrue.toString(), Toast.LENGTH_SHORT).show()
     }
+
+
 }
+
