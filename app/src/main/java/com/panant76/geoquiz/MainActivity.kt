@@ -19,12 +19,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var questionTextView: TextView
 
     private val questionBank = listOf(
-        Questions(R.string.question_australia, true),
-        Questions(R.string.question_oceans, true),
-        Questions(R.string.question_mideast, false),
-        Questions(R.string.question_africa, false),
-        Questions(R.string.question_americas, true),
-        Questions(R.string.question_asia, true)
+        Questions(R.string.question_australia, true, null),
+        Questions(R.string.question_oceans, true, null),
+        Questions(R.string.question_mideast, false, null),
+        Questions(R.string.question_africa, false, null),
+        Questions(R.string.question_americas, true, null),
+        Questions(R.string.question_asia, true, null)
     )
 
     private var currentIndex = 0
@@ -32,26 +32,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG,"onCreate(Bundle?) called")
+        Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
 
         trueButton = findViewById(R.id.true_button)
-        trueButton.setOnClickListener { view: View ->
+        trueButton.setOnClickListener {
             checkAnswer(true)
+            updateQuestion()
         }
 
         falseButton = findViewById(R.id.false_button)
-        falseButton.setOnClickListener { view: View ->
+        falseButton.setOnClickListener {
             checkAnswer(false)
+            updateQuestion()
         }
 
         revButton = findViewById(R.id.rev_button)
         revButton.setOnClickListener {
-            if (currentIndex > 0) {
-                currentIndex = (currentIndex - 1) % questionBank.size
-            } else {
-                currentIndex
-            }
+            val diff = currentIndex - 1
+            currentIndex = if (diff == -1) questionBank.size - 1 else diff % questionBank.size
+
             updateQuestion()
         }
 
@@ -64,22 +64,27 @@ class MainActivity : AppCompatActivity() {
         updateQuestion()
 
     }
+
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart() called")
     }
+
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume() called")
     }
+
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause() called")
     }
+
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop() called")
     }
+
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy() called")
@@ -88,6 +93,14 @@ class MainActivity : AppCompatActivity() {
     private fun updateQuestion() {
         val questionTextResId = questionBank[currentIndex].textResId
         questionTextView.setText(questionTextResId)
+
+        if (questionBank[currentIndex].usrAnswer != null) {
+            trueButton.isEnabled = false
+            falseButton.isEnabled = false
+        } else {
+            trueButton.isEnabled = true
+            falseButton.isEnabled = true
+        }
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
@@ -98,6 +111,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             R.string.incorrect_toast
         }
+        questionBank[currentIndex].usrAnswer = userAnswer
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
     }
 }
