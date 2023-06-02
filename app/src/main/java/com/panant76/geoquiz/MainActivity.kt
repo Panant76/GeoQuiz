@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
     private var currentIndex = 0
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
@@ -103,7 +102,8 @@ class MainActivity : AppCompatActivity() {
             falseButton.isEnabled = true
         }
     }
-private var counterTrue = 0
+
+    private var counterTrue = 0
     private fun checkAnswer(userAnswer: Boolean) {
 
         val correctAnswer = questionBank[currentIndex].answer
@@ -116,8 +116,17 @@ private var counterTrue = 0
             R.string.incorrect_toast
         }
         questionBank[currentIndex].usrAnswer = userAnswer
-        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
-        Toast.makeText(this, counterTrue.toString(), Toast.LENGTH_SHORT).show()
+
+        val valueMean = (counterTrue.toDouble() / questionBank.size) * 100
+        if (currentIndex == questionBank.size - 1) {
+            Toast.makeText(
+                this,
+                "Правильных ответов " + valueMean.toString() + "%",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+        }
     }
 
 
