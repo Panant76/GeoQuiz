@@ -1,7 +1,6 @@
 package com.panant76.geoquiz
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
@@ -18,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var trueButton: Button
     private lateinit var falseButton: Button
     private lateinit var prevButton: ImageButton
+    private lateinit var cheatButton: Button
     private lateinit var nextButton: ImageButton
     private lateinit var questionTextView: TextView
 
@@ -62,6 +62,12 @@ class MainActivity : AppCompatActivity() {
         questionTextView = findViewById(R.id.question_text_view)
         updateQuestion()
 
+        cheatButton = findViewById(R.id.cheat_button)
+        cheatButton.setOnClickListener {
+            val answerIsTrue=quizViewModel.currentQuestionAnswer
+            val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+            startActivity(intent)
+        }
     }
 
     override fun onStart() {
@@ -130,7 +136,7 @@ class MainActivity : AppCompatActivity() {
 //                Toast.LENGTH_SHORT
 //            ).show()
 //        } else {
-//            Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+           Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
 //        }
     }
 
