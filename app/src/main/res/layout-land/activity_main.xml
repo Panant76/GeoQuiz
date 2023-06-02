@@ -37,11 +37,11 @@
 
 
         <ImageButton
-            android:id="@+id/rev_button"
+            android:id="@+id/prev_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:contentDescription="@string/rev_button"
+            android:layout_gravity="bottom|start"
+            android:contentDescription="@string/prev_button"
             android:src="@drawable/arrow_left" />
 
         <ImageButton
