@@ -7,7 +7,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var questionTextView: TextView
 
     private val quizViewModel: QuizViewModel by lazy {
-        ViewModelProviders.of(this).get(QuizViewModel::class.java)
+        ViewModelProvider(this)[QuizViewModel::class.java]
     }
 
 
@@ -35,36 +35,46 @@ class MainActivity : AppCompatActivity() {
         quizViewModel.currentIndex = currentIndex
 
         trueButton = findViewById(R.id.true_button)
+        falseButton = findViewById(R.id.false_button)
+        prevButton = findViewById(R.id.prev_button)
+        nextButton = findViewById(R.id.next_button)
+        questionTextView = findViewById(R.id.question_text_view)
+        cheatButton = findViewById(R.id.cheat_button)
+
+
         trueButton.setOnClickListener {
             checkAnswer(true)
             updateQuestion()
         }
 
-        falseButton = findViewById(R.id.false_button)
+
         falseButton.setOnClickListener {
             checkAnswer(false)
             updateQuestion()
         }
 
-        prevButton = findViewById(R.id.prev_button)
+
         prevButton.setOnClickListener {
             quizViewModel.moveToPrev()
             updateQuestion()
         }
 
-        nextButton = findViewById(R.id.next_button)
+
         nextButton.setOnClickListener {
             quizViewModel.moveToNext()
             updateQuestion()
 
         }
 
-        questionTextView = findViewById(R.id.question_text_view)
-        updateQuestion()
 
-        cheatButton = findViewById(R.id.cheat_button)
+        questionTextView.setOnClickListener {
+            quizViewModel.moveToNext()
+            updateQuestion()
+        }
+
+
         cheatButton.setOnClickListener {
-            val answerIsTrue=quizViewModel.currentQuestionAnswer
+            val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
             startActivity(intent)
         }
@@ -105,16 +115,17 @@ class MainActivity : AppCompatActivity() {
         val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
 
-//        if (quizViewModel.questionBank[currentIndex].usrAnswer != null) {
-//            trueButton.isEnabled = false
-//            falseButton.isEnabled = false
-//        } else {
-//            trueButton.isEnabled = true
-//            falseButton.isEnabled = true
-//        }
+        if (quizViewModel.getCurrentIndex.usrAnswer != null) {
+            trueButton.isEnabled = false
+            falseButton.isEnabled = false
+        } else {
+            trueButton.isEnabled = true
+            falseButton.isEnabled = true
+        }
     }
 
     private var counterTrue = 0
+
     private fun checkAnswer(userAnswer: Boolean) {
 
         val correctAnswer = quizViewModel.currentQuestionAnswer
@@ -126,18 +137,19 @@ class MainActivity : AppCompatActivity() {
         } else {
             R.string.incorrect_toast
         }
-//        questionBank[currentIndex].usrAnswer = userAnswer
-//
-//        val valueMean = (counterTrue.toDouble() / questionBank.size) * 100
-//        if (currentIndex == questionBank.size - 1) {
-//            Toast.makeText(
-//                this,
-//                "Правильных ответов " + valueMean.toString() + "%",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        } else {
-           Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
-//        }
+        //counterAnswer = (counterAnswer + 1) % quizViewModel.getBankSize
+        quizViewModel.getCurrentIndex.usrAnswer = userAnswer
+
+        val valueMean = (counterTrue.toDouble() / quizViewModel.getBankSize) * 100
+        if (quizViewModel.currentIndex == quizViewModel.getBankSize - 1) {
+            Toast.makeText(
+                this,
+                "Правильных ответов $valueMean%",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+        }
     }
 
 
