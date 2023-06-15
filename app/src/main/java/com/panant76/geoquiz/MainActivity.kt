@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import kotlin.math.roundToInt
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
@@ -34,6 +35,8 @@ class MainActivity : AppCompatActivity() {
         val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
         quizViewModel.currentIndex = currentIndex
 
+
+
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
         prevButton = findViewById(R.id.prev_button)
@@ -41,16 +44,21 @@ class MainActivity : AppCompatActivity() {
         questionTextView = findViewById(R.id.question_text_view)
         cheatButton = findViewById(R.id.cheat_button)
 
+        updateQuestion()
 
         trueButton.setOnClickListener {
             checkAnswer(true)
+            quizViewModel.moveToNext()
             updateQuestion()
+
         }
 
 
         falseButton.setOnClickListener {
             checkAnswer(false)
+            quizViewModel.moveToNext()
             updateQuestion()
+
         }
 
 
@@ -71,7 +79,6 @@ class MainActivity : AppCompatActivity() {
             quizViewModel.moveToNext()
             updateQuestion()
         }
-
 
         cheatButton.setOnClickListener {
             val answerIsTrue = quizViewModel.currentQuestionAnswer
@@ -115,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
 
-        if (quizViewModel.getCurrentIndex.usrAnswer != null) {
+        if (quizViewModel.getUsrAnswer) {
             trueButton.isEnabled = false
             falseButton.isEnabled = false
         } else {
@@ -130,6 +137,7 @@ class MainActivity : AppCompatActivity() {
 
         val correctAnswer = quizViewModel.currentQuestionAnswer
 
+
         val messageResId = if (userAnswer == correctAnswer) {
             counterTrue++
             R.string.correct_toast
@@ -137,19 +145,23 @@ class MainActivity : AppCompatActivity() {
         } else {
             R.string.incorrect_toast
         }
-        //counterAnswer = (counterAnswer + 1) % quizViewModel.getBankSize
-        quizViewModel.getCurrentIndex.usrAnswer = userAnswer
 
-        val valueMean = (counterTrue.toDouble() / quizViewModel.getBankSize) * 100
+        quizViewModel.getUsrAnswer = true
+
+        val valueMean = ((counterTrue.toDouble() / quizViewModel.getBankSize) * 100).roundToInt()
+
+
         if (quizViewModel.currentIndex == quizViewModel.getBankSize - 1) {
             Toast.makeText(
                 this,
                 "Правильных ответов $valueMean%",
                 Toast.LENGTH_SHORT
             ).show()
+
         } else {
             Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
         }
+
     }
 
 

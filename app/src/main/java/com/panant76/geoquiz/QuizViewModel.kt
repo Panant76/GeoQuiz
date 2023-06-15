@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 class QuizViewModel : ViewModel() {
 
     private val questionBank = listOf(
-        Questions(R.string.question_australia, true, null),
-        Questions(R.string.question_oceans, true, null),
-        Questions(R.string.question_mideast, false, null),
-        Questions(R.string.question_africa, false, null),
-        Questions(R.string.question_americas, true, null),
-        Questions(R.string.question_asia, true, null)
+        Questions(R.string.question_australia, true),
+        Questions(R.string.question_oceans, true),
+        Questions(R.string.question_mideast, false),
+        Questions(R.string.question_africa, false),
+        Questions(R.string.question_americas, true),
+        Questions(R.string.question_asia, true)
     )
 
     var currentIndex = 0
@@ -20,8 +20,14 @@ class QuizViewModel : ViewModel() {
 
     val currentQuestionText: Int
         get() = questionBank[currentIndex].textResId
-    val getCurrentIndex: Questions
-        get() = questionBank[currentIndex]
+    var getUsrAnswer: Boolean
+        get() = questionBank[currentIndex].usrAnswer
+
+        set(value) {
+            questionBank[currentIndex].usrAnswer = value
+        }
+
+
     val getBankSize: Int
         get() = questionBank.size
 
@@ -33,4 +39,6 @@ class QuizViewModel : ViewModel() {
         val diff = currentIndex - 1
         currentIndex = if (diff == -1) questionBank.size - 1 else diff % questionBank.size
     }
+
+
 }
