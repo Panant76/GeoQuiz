@@ -1,5 +1,7 @@
 package com.panant76.geoquiz
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -12,6 +14,7 @@ import kotlin.math.roundToInt
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
+private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
 
@@ -83,7 +86,18 @@ class MainActivity : AppCompatActivity() {
         cheatButton.setOnClickListener {
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
-            startActivity(intent)
+            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+        }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode != Activity.RESULT_OK) return
+
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
         }
     }
 
@@ -134,16 +148,15 @@ class MainActivity : AppCompatActivity() {
     private var counterTrue = 0
 
     private fun checkAnswer(userAnswer: Boolean) {
-
         val correctAnswer = quizViewModel.currentQuestionAnswer
+        val messageResId = when {
+            quizViewModel.isCheater -> R.string.judgment_toast
+            userAnswer == correctAnswer -> {
+                counterTrue++
+                R.string.correct_toast
 
-
-        val messageResId = if (userAnswer == correctAnswer) {
-            counterTrue++
-            R.string.correct_toast
-
-        } else {
-            R.string.incorrect_toast
+            }
+            else -> R.string.incorrect_toast
         }
 
         quizViewModel.getUsrAnswer = true
