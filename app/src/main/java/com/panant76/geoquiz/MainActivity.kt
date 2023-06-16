@@ -1,20 +1,20 @@
 package com.panant76.geoquiz
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import kotlin.math.roundToInt
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
-private const val REQUEST_CODE_CHEAT = 0
+//private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
 
@@ -86,20 +86,21 @@ class MainActivity : AppCompatActivity() {
         cheatButton.setOnClickListener {
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
-            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+            //startActivityForResult(intent, REQUEST_CODE_CHEAT)
+            getResult.launch(intent)
         }
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private val getResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
 
-        if (resultCode != Activity.RESULT_OK) return
-
-        if (requestCode == REQUEST_CODE_CHEAT) {
-            quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            if (it.resultCode == Activity.RESULT_OK) {
+                // if (requestCode == REQUEST_CODE_CHEAT) {
+                quizViewModel.isCheater =
+                    it.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            }
         }
-    }
 
     override fun onStart() {
         super.onStart()
@@ -156,6 +157,7 @@ class MainActivity : AppCompatActivity() {
                 R.string.correct_toast
 
             }
+
             else -> R.string.incorrect_toast
         }
 
